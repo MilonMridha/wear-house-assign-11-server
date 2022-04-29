@@ -46,7 +46,14 @@ async function run(){
             const query = {_id: ObjectId(id)};
             const result = await perfumeCollection.deleteOne(query);
             res.send(result);
-        })
+        });
+
+        //post operation------------>
+        app.post('/product', async(req, res) =>{
+            const newItem = req.body;
+            const result = perfumeCollection.insertOne(newItem);
+            res.send(result);
+        } )
     }
 
     finally{
