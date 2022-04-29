@@ -39,6 +39,14 @@ async function run(){
             const result = await perfumeCollection.findOne(query);
             res.send(result);
         });
+
+        //delete operation--------->
+        app.delete('/product/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await perfumeCollection.deleteOne(query);
+            res.send(result);
+        })
     }
 
     finally{
