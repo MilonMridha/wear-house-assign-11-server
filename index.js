@@ -19,7 +19,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
-console.log('db connected')
+
 
 async function run(){
     try{
@@ -39,6 +39,22 @@ async function run(){
             const result = await perfumeCollection.findOne(query);
             res.send(result);
         });
+        // Update quantity ----------->
+        app.put('/product/:id', async(req, res)=>{
+            const id = req.params.id;
+            const updateItem = req.body;
+            const filter = {_id: ObjectId(id)};
+            const options = { upsert : true};
+            const updateDoc = {
+                $set: {
+                    quantity: updateItem.quantity
+                }
+            }
+            const result = await perfumeCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+
+
+        })
 
         //delete operation--------->
         app.delete('/product/:id', async(req, res)=>{
@@ -51,9 +67,9 @@ async function run(){
         //post operation------------>
         app.post('/product', async(req, res) =>{
             const newItem = req.body;
-            const result = perfumeCollection.insertOne(newItem);
+            const result = await perfumeCollection.insertOne(newItem);
             res.send(result);
-        } )
+        });
     }
 
     finally{
