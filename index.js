@@ -47,7 +47,7 @@ async function run(){
             const options = { upsert : true};
             const updateDoc = {
                 $set: {
-                    quantity: updateItem.quantity
+                    updateItem
                 }
             }
             const result = await perfumeCollection.updateOne(filter, updateDoc, options);
