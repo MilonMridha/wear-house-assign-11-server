@@ -43,11 +43,12 @@ async function run(){
         app.put('/product/:id', async(req, res)=>{
             const id = req.params.id;
             const updateItem = req.body;
+            console.log(updateItem)
             const filter = {_id: ObjectId(id)};
             const options = { upsert : true};
             const updateDoc = {
                 $set: {
-                    quantity: updateItem.quantity
+                    quantity: updateItem.newQtyTotal
                 }
             }
             const result = await perfumeCollection.updateOne(filter, updateDoc, options);
