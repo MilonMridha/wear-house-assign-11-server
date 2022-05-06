@@ -12,6 +12,8 @@ require('dotenv').config()
 app.use(cors());
 app.use(express.json());
 
+
+//jwt function--------->
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -22,7 +24,7 @@ function verifyJWT(req, res, next) {
         if (err) {
             return res.status(403).send({ message: 'Forbidden' })
         }
-        console.log('decoded', decoded)
+        
         req.decoded = decoded;
         next();
     })
@@ -98,6 +100,7 @@ async function run() {
         app.get('/add', verifyJWT, async (req, res) => {
             const decodedEmail = req.decoded.email;
             const email = req.query.email;
+            
             if (email === decodedEmail) {
                 const query = { email: email };
                 const cursor = addCollection.find(query);
