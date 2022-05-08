@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 
-//jwt function--------->
+//jwt function--------->s
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -24,12 +24,12 @@ function verifyJWT(req, res, next) {
         if (err) {
             return res.status(403).send({ message: 'Forbidden' })
         }
-        
+
         req.decoded = decoded;
         next();
     })
-    
-    
+
+
 }
 
 
@@ -57,11 +57,29 @@ async function run() {
 
         //Perfume api-------->
         app.get('/product', async (req, res) => {
+
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
             const query = {}
             const cursor = perfumeCollection.find(query);
-            const result = await cursor.toArray();
-            res.send(result);
+
+
+            let products;
+            if (page || size) {
+                products = await cursor.skip(page*size).limit(size).toArray();
+
+            }
+            else {
+                products = await cursor.toArray();
+            }
+
+            res.send(products);
         });
+        // For pagination----->
+        app.get('/productCount', async (req, res) => {
+            const count = await perfumeCollection.estimatedDocumentCount();
+            res.send({ count });
+        })
 
         app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
@@ -73,7 +91,7 @@ async function run() {
         app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
             const updateItem = req.body;
-           
+
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
@@ -100,15 +118,15 @@ async function run() {
         app.get('/add', verifyJWT, async (req, res) => {
             const decodedEmail = req.decoded.email;
             const email = req.query.email;
-            
+
             if (email === decodedEmail) {
                 const query = { email: email };
                 const cursor = addCollection.find(query);
                 const result = await cursor.toArray();
                 res.send(result);
             }
-            else{
-                res.status(403).send({message: 'Fobidden access'})
+            else {
+                res.status(403).send({ message: 'Fobidden access' })
             }
         });
         //delete My item api
